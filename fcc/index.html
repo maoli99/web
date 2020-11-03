@@ -1,0 +1,491 @@
+<!-- 下拉列表放上去就能下来选 -->
+<!-- 复选框动画 -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --color-white: #f3f3f3;
+        --color-darkblue: #1b1b32;
+        --color-darkblue-alpha: rgba(27, 27, 50, 0.8);
+        --color-green: #37af65;
+        --checkbox-radio-bg: #6933ff;
+      }
+      .text-center {
+        text-align: center;
+      }
+      body {
+        font-family: sans-serif, Arial, Helvetica;
+        font-size: 1rem;
+        font-weight: 400;
+        color: var(--color-white);
+        line-height: 1.4;
+        background: var(--color-darkblue);
+      }
+      body::before {
+        content: "";
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        background-image: linear-gradient(
+            115deg,
+            rgba(58, 58, 158, 0.8),
+            rgba(136, 136, 206, 0.7)
+          ),
+          url(https://cdn.freecodecamp.org/testable-projects-fcc/images/survey-form-background.jpeg);
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      .header {
+        padding: 0 0.625rem;
+        margin-bottom: 1.875rem;
+      }
+      h1 {
+        font-weight: 400;
+        line-height: 1.2;
+      }
+      p {
+        font-size: 1.125rem;
+      }
+      h1,
+      p {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+      }
+      .description {
+        font-style: italic;
+        font-weight: 200;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+      }
+      .clue {
+        margin-left: 0.25rem;
+        font-size: 0.9rem;
+        color: #e4e4e4;
+      }
+      label {
+        display: flex;
+        align-items: center;
+        font-size: 1.125rem;
+        margin-bottom: 0.5rem;
+      }
+      input,
+      button,
+      select,
+      textarea {
+        margin: 0;
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+      }
+      form {
+        background: var(--color-darkblue-alpha);
+        padding: 2.5rem 0.625rem;
+        border-radius: 0.25rem;
+      }
+      button {
+        border: none;
+      }
+      .main {
+        width: 100%;
+        margin: 3.125rem auto 0 auto;
+      }
+      .form-group {
+        margin: 0 auto 1.25rem auto;
+        padding: 0.25rem;
+      }
+      .form-control {
+        display: block;
+        width: 100%;
+        height: 2.375rem;
+        padding: 0.375rem 0.75rem;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      }
+
+      .form-control:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+
+      label {
+        user-select: none;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+      }
+
+      .input-radio {
+        display: inline-block;
+        margin-right: 0.625rem;
+        min-height: 1.25rem;
+        min-width: 1.25rem;
+      }
+
+      .input-checkbox {
+        display: none;
+        margin-right: 0.625rem;
+        min-height: 1.25rem;
+        min-width: 1.25rem;
+      }
+      /* 设计复选框 */
+      .box {
+        display: inline-block;
+        width: 1.22rem;
+        height: 1.22rem;
+        margin-right: 0.625rem;
+        border: 1px solid #ccc;
+        border-radius: 0.37rem;
+        background-color: white;
+        /* vertical-align: middle; */
+        transition: all 0.3s ease;
+      }
+      /*input被选中时能选到之后的.box*/
+      input:checked + .box {
+        background: var(--checkbox-radio-bg);
+      }
+      /* 绘制打勾 */
+      .box::before,
+      .box::after {
+        content: "";
+        position: absolute;
+        width: 3px;
+        height: 15px;
+        border-radius: 40px;
+        background: white;
+        transition: all 0.3s ease;
+      }
+      .box::before {
+        transform: rotate(45deg) translateY(-5px) translateX(10px) scale(0);
+      }
+      .box::after {
+        height: 7px;
+        transform: rotate(-45deg) translateY(10px) translateX(-4px) scale(0);
+      }
+      input:checked + .box::before {
+        transform: rotate(45deg) translateY(-5px) translateX(10px) scale(1);
+      }
+      input:checked + .box::after {
+        transform: rotate(-45deg) translateY(10px) translateX(-4px) scale(1);
+      }
+
+      .input-textarea {
+        min-height: 120px;
+        width: 100%;
+        padding: 0.625rem;
+        resize: vertical;
+      }
+
+      .submit-button {
+        display: inline-block;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1; /*层次和文字层次没懂*/
+        width: 25%;
+        padding: 0.65rem;
+        color: inherit;
+        border-radius: 3px;
+        cursor: pointer;
+        background: #b621fe;
+        box-shadow: inset 2px 2px 2px rgba(255, 255, 255, 0.5),
+          7px 7px 20px 0px rgba(0, 0, 0, 0.1),
+          4px 4px 5px 0px rgba(0, 0, 0, 0.1);
+      }
+      .submit-button::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        /* 没有初始宽度时宽度会直接设置成下方100%没有动画效果 */
+        width: 0px;
+        height: 100%;
+        border-radius: 3px;
+        background-color: #663dff;
+        top: 0;
+        right: 0;
+        box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, 0.5),
+          7px 7px 20px 0px rgba(0, 0, 0, 0.1),
+          4px 4px 5px 0px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s ease;
+      }
+      .submit-button:hover {
+        color: inherit;
+      }
+      .submit-button:hover:after {
+        left: 0;
+        width: 100%;
+      }
+      .submit-button:active:after {
+        box-shadow: inset -4px -4px 6px 0 rgba(255, 255, 255, 0.2),
+          inset 4px 4px 6px 0 rgba(0, 0, 0, 0.4);
+      }
+      .submit-button:active {
+        font-size: 0.9rem;
+      }
+      @media (min-width: 576px) {
+        .main {
+          max-width: 540px;
+        }
+      }
+
+      @media (min-width: 768px) {
+        .main {
+          max-width: 720px;
+        }
+      }
+
+      @media (min-width: 480px) {
+        form {
+          padding: 2.5rem;
+        }
+      }
+
+      input[type=radio]{
+        display: none;
+      }
+
+      .radio {
+        position: relative;
+        display: inline-block;
+        width: 1.22rem;
+        height: 1.22rem;
+        margin-right: 1.22rem;
+      }
+
+      .radio:before {
+        content: "";
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        top: 0;
+        left: 0;
+        border: 1px solid #ccc;
+        border-radius: 50%;
+        background-color: white;
+      }
+      .radio:after{
+        content: "";
+        position: absolute;
+        width: 0px;
+        height: 0px;
+        top: 12px;
+        left: 12px;
+        border-radius: 50%;
+        background-color: var(--checkbox-radio-bg);
+      }
+      input:checked + .radio::after {
+        width: 16px;
+        height: 16px;
+        top: 4px;
+        left: 4px;
+        transition: all 0.3s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <header class="header">
+        <h1 id="title" class="text-center">FreeCodeCamp小调查</h1>
+        <p id="description" class="description text-center">
+          感谢您花时间帮助我们改进平台
+        </p>
+      </header>
+
+      <form id="survey-form">
+        <div class="form-group">
+          <label id="name-label" for="name"> 姓名 </label>
+          <input type="text" name="name" id="name" placeholder="输入姓名" />
+        </div>
+        <div class="form-group">
+          <label for="email"> 邮箱 </label>
+          <input type="email" name="email" id="email" placeholder="输入邮箱" />
+        </div>
+        <div class="form-group">
+          <label for="age"> 年龄<span class="clue">（可选）</span> </label>
+          <input
+            type="number"
+            name="age"
+            id="age"
+            min="10"
+            max="120"
+            placeholder="年龄"
+          />
+        </div>
+        <div class="form-group">
+          <p>哪个选项最能描述你目前的职位？</p>
+          <select name="role" id="dropdown" class="form-control">
+            <option value="" disabled="disabled" selected>选择当前职位</option>
+            <option value="student">学生</option>
+            <option value="job">全职工作</option>
+            <option value="Learner">科研人员</option>
+            <option value="preferNo">自由职业</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <p>你会向你的朋友推荐freeCodeCamp吗？</p>
+          <label>
+            <input
+              type="radio"
+              name="user-recommend"
+              value="definitely"
+              class="input-radio"
+              checked
+            />
+            <span class="radio"></span>
+            当然
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="user-recommend"
+              value="maybe"
+              class="input-radio"
+            />
+            <span class="radio"></span>
+            也许
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="user-recommend"
+              value="not-sure"
+              class="input-radio"
+            />
+            <span class="radio"></span>
+            不确定
+          </label>
+        </div>
+        <div class="form-group">
+          <p>你最喜欢FreeCodeCamp的什么？</p>
+          <select name="most-like" id="most-like" class="form-control" required>
+            <option value="" disabled="disabled" selected>选择一个选项</option>
+            <option value="challenges">挑战</option>
+            <option value="projects">项目</option>
+            <option value="Community">社区</option>
+            <option value="openSource">开源</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <p>你希望看到哪些改进?</p>
+          <span class="clue">(检查所有申请)</span>
+          <label>
+            <input
+              name="prefer"
+              value="front-end-projects"
+              type="checkbox"
+              class="input-checkbox"
+            />
+            <span class="box"></span>
+            前端项目
+          </label>
+          <label>
+            <input
+              name="prefer"
+              value="back-end-projects"
+              type="checkbox"
+              class="input-checkbox"
+            />
+            <span class="box"></span>
+            后端项目
+          </label>
+          <label>
+            <input
+              name="prefer"
+              value="data-visualization"
+              type="checkbox"
+              class="input-checkbox"
+            />
+            <span class="box"></span>
+            数据可视化
+          </label>
+          <label>
+            <input
+              name="prefer"
+              value="challenges"
+              type="checkbox"
+              class="input-checkbox"
+            />
+            <span class="box"></span>
+            挑战
+          </label>
+          <label>
+            <input
+              name="prefer"
+              value="open-source-community"
+              type="checkbox"
+              class="input-checkbox"
+            />
+            <span class="box"></span>
+            开源社区
+          </label>
+          <label>
+            <input
+              name="prefer"
+              value="gitter-help-rooms"
+              type="checkbox"
+              class="input-checkbox"
+            />
+            <span class="box"></span>
+            Gitter 帮助房间
+          </label>
+          <label>
+            <input
+              name="prefer"
+              value="videos"
+              type="checkbox"
+              class="input-checkbox"
+            />
+            <span class="box"></span>
+            视频
+          </label>
+          <label>
+            <input
+              name="prefer"
+              value="Forum"
+              type="checkbox"
+              class="input-checkbox"
+            />
+            <span class="box"></span>
+            论坛
+          </label>
+          <label>
+            <input
+              name="prefer"
+              value="Additional Courses"
+              type="checkbox"
+              class="input-checkbox"
+            />
+            <span class="box"></span>
+            额外的课程
+          </label>
+        </div>
+        <div class="form-group">
+          <p>有什么意见或建议吗？</p>
+          <textarea
+            name="comment"
+            id="comments"
+            class="input-textarea"
+            placeholder="在这里输入你的评论…"
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <button type="submit" id="submit" class="submit-button">提交</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
