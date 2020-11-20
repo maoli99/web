@@ -1,5 +1,6 @@
-{
-  "name": "maoli",
-  "age": 16,
-  "class": 18
-}
+[
+  { "name": "ARTESIA", "time": 10, "sales": 8 },
+  { "name": "LOS ANGELES", "time": 11, "sales": 2 },
+  { "name": "PASADENA", "time": 12, "sales": 8 },
+  { "name": "STOCKTON", "time": 13, "sales": 2 }
+]
